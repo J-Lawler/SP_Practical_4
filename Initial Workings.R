@@ -27,61 +27,20 @@
 
 
 
-###############################################################################
 
 
 
-
-# Test Functions from Task Sheet
-
-# Function to minimise
-rb <- function(th,k=2){ 
-  k*(th[2]-th[1]^2)^2 + (1-th[1])^2
-  }
-
-# Gradient
-gb <- function(th,k=2){ 
-  c(-2*(1-th[1])-k*4*th[1]*(th[2]-th[1]^2),k*2*(th[2]-th[1]^2))
-  }
-
-# Hessian
-hb <- function(th,k=2){ 
-  h <- matrix(0,2,2) 
-  h[1,1] <- 2-k*2*(2*(th[2]-th[1]^2) - 4*th[1]^2) 
-  h[2,2] <- 2*k 
-  h[1,2] <- h[2,1] <- -4*k*th[1] 
-  h
-  }
-
-
-
-
-########## Use In-built Function ##########
-
-
-init_nlm <- c(2,2)
-
-estimate_nlm <- nlm(f= rb, p = init_nlm)$estimate
-
-
-
-
-########## Use Hand-built Function ##########
-
-
-
-# Parameters
-init <- c(2,2)
+######## Function Code ########
 
 
 
 newt <- function(theta,func,grad,hess=NULL,...,tol=1e-8,fscale=1,maxit=100,max.half=20,eps=1e-6){
   
   # Starting point
-  step_prev <- init
+  step_prev <- theta
   
   # Gradient at starting point
-  gradient <- grad(init)
+  gradient <- grad(theta)
   
   # Count iterations 
   iter <-  1
@@ -133,19 +92,5 @@ newt <- function(theta,func,grad,hess=NULL,...,tol=1e-8,fscale=1,maxit=100,max.h
 
 
 
-estimate_newt <- newt(theta = init,func = rb,grad = gb,hess = hb,
-     tol=1e-8,fscale=1,maxit=100,max.half=20,eps=1e-6)
 
-
-####################
-
-
-print("Estimate from in-built R function:")
-
-estimate_nlm
-
-
-print("Estimate from newt function:")
-
-estimate_newt[,1]
 
