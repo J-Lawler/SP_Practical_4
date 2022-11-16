@@ -12,17 +12,13 @@
 
 # What if Hessian is not supplied - need to create using finite differences
 
-# What if gradient is not supplied - do we need to consider this case?
-
 # Need to improve on checking convergence - now only uses gradient < tolerance
-
-# Efficiency - Cholesky decomposition to find inverse instead of solve function
-
-# What does fscale do? How do we use it?
 
 # Need to make sure the ... argument is working properly
 
 # Implement appropriate errors and warnings
+
+# What if gradient is not supplied - do we need to consider this case?
 
 
 
@@ -56,7 +52,9 @@ newt <- function(theta,func,grad,hess=NULL,...,tol=1e-8,fscale=1,maxit=100,max.h
     gradient <- grad(step_prev)
     
     # the change to find the next step - see lecture notes page 66
-    delta <- - solve(hessian)%*%gradient
+    R <- chol(hessian)
+    # Solve Hessian^-1 * gradient
+    delta <- - backsolve(R,forwardsolve(t(R),gradient))
     
     # next step
     step <-  step_prev+delta
@@ -68,8 +66,8 @@ newt <- function(theta,func,grad,hess=NULL,...,tol=1e-8,fscale=1,maxit=100,max.h
       # if we half the delta too many times
       if(j == max.half+1){stop("Oops")}
       
-      # Check function has decreased
-      if(func(step_prev)-func(step)>0){
+      # Check function has decreased (and the objective function is not infinte)
+      if(is.finite(func(step_prev)-func(step)) & func(step_prev)-func(step)>0){
         break
       }
       else{
@@ -88,6 +86,10 @@ newt <- function(theta,func,grad,hess=NULL,...,tol=1e-8,fscale=1,maxit=100,max.h
   final
   
 }
+
+
+
+
 
 
 

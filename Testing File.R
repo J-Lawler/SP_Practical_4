@@ -64,6 +64,14 @@ estimate_nlm
 
 print("Estimate from newt function:")
 
-estimate_newt[,1]
+estimate_newt
+
+
+
+
+################################################################################
+
+
+
 
 
