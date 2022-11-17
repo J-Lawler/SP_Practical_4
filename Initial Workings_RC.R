@@ -51,7 +51,7 @@ newt <- function(theta,func,grad,hess=NULL,...,tol=1e-8,fscale=1,maxit=100,max.h
   
   # Loop through steps
   # Stop when gradient is (very near) 0 or we exceed the maximum number of iterations
-  while(judge(gradient, tol, fscale, func(step)) == FALSE ){ # hessian should be +ve def also
+  while(judge(gradient, tol, fscale, func(step)) == FALSE & iter <= maxit){ # hessian should be +ve def also
     
     # hessian at current step
     hessian <- hess(step_prev)
@@ -69,7 +69,7 @@ newt <- function(theta,func,grad,hess=NULL,...,tol=1e-8,fscale=1,maxit=100,max.h
     
     for(j in 1:max.half+1){
       
-      # is this for error 3?
+      # is this for error 3
       # if we half the delta too many times
       if(j == max.half+1){stop("Oops")}
       
