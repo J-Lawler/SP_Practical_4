@@ -14,7 +14,7 @@
 
 # What if gradient is not supplied - do we need to consider this case?
 
-# Need to improve on checking convergence - now only uses gradient < tolerance
+# Need to improve on checking convergence - now only uses gradient < tolerance**
 
 # Efficiency - Cholesky decomposition to find inverse instead of solve function
 
@@ -22,7 +22,7 @@
 
 # Need to make sure the ... argument is working properly
 
-# Implement appropriate errors and warnings
+# Implement appropriate errors and warnings**
 
 
 
@@ -36,6 +36,10 @@
 
 newt <- function(theta,func,grad,hess=NULL,...,tol=1e-8,fscale=1,maxit=100,max.half=20,eps=1e-6){
   
+  # stop if the objective or derivatives are not finite at the initial theta
+  
+  if( is.infinite(grad(theta)) || is.infinite(fun(theta))){ stop("infinite at theta")}
+  
   # Starting point
   step_prev <- theta
   
@@ -47,7 +51,7 @@ newt <- function(theta,func,grad,hess=NULL,...,tol=1e-8,fscale=1,maxit=100,max.h
   
   # Loop through steps
   # Stop when gradient is (very near) 0 or we exceed the maximum number of iterations
-  while(judge(gradient, tol, fscale, func(step)) == FALSE & iter <= maxit ){ # hessian should be +ve def also
+  while(judge(gradient, tol, fscale, func(step)) == FALSE ){ # hessian should be +ve def also
     
     # hessian at current step
     hessian <- hess(step_prev)
@@ -65,6 +69,7 @@ newt <- function(theta,func,grad,hess=NULL,...,tol=1e-8,fscale=1,maxit=100,max.h
     
     for(j in 1:max.half+1){
       
+      # is this for error 3?
       # if we half the delta too many times
       if(j == max.half+1){stop("Oops")}
       
@@ -76,10 +81,25 @@ newt <- function(theta,func,grad,hess=NULL,...,tol=1e-8,fscale=1,maxit=100,max.h
         delta <- delta/2
         step <- step_prev+delta
       }
+      
+    # stop if maxit is reached without convergence, adding try code here since 
+    #inside while loop means not convergence
+    if(iter == maxit){
+      warning("reached maxit without convergence")
+    }
+      
     }
     
     step_prev <- step
+    
+    # if iter not reach maxit, add 1 on iter
+    if ( iter < maxit ){
     iter <- iter + 1
+    }
+    
+    # warning if Hessian is not +ve def
+    e <- try(chol(hessian), silent=TRUE)
+    if(inherits(e, "try-error")) warning("not +ve def hessian matrix at convergence ")
   }
   
   
@@ -107,7 +127,6 @@ judge <- function(grad, tol, fscale, f){
   
   
 }
-
 
 
 
