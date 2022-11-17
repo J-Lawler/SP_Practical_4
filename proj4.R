@@ -19,10 +19,11 @@ newt <- function(theta,func,grad,hess=NULL,...,tol=1e-8,fscale=1,maxit=100,max.h
   
   # Count iterations 
   iter <-  1
+  stop <-  FALSE
   
   # Loop through steps
   # Stop when gradient is (very near) 0 or we exceed the maximum number of iterations
-  while(abs(sum(gradient))>=tol & iter <= maxit){ # hessian should be +ve def also
+  while(stop == FALSE & iter <= maxit){ # hessian should be +ve def also
     
     # gradient at current step
     gradient <- grad(step_prev)
@@ -68,16 +69,19 @@ newt <- function(theta,func,grad,hess=NULL,...,tol=1e-8,fscale=1,maxit=100,max.h
     
     step_prev <- step
     
+    stop <- judge(func,grad, step, tol, fscale)
+    
     # if iter not reach maxit, add 1 on iter
     if ( iter < maxit ){
       iter <- iter + 1
     }
     
-    # warning if Hessian is not +ve def
-    e <- try(chol(hessian), silent=TRUE)
-    if(inherits(e, "try-error")) warning("not +ve def hessian matrix at convergence ")
   }
   
+  
+  # warning if Hessian is not +ve def
+  e <- try(chol(hessian), silent=TRUE)
+  if(inherits(e, "try-error")) warning("not +ve def hessian matrix at convergence ")
   
   final <- step
   
@@ -90,11 +94,12 @@ newt <- function(theta,func,grad,hess=NULL,...,tol=1e-8,fscale=1,maxit=100,max.h
 
 # Stopping Criteria
 
-judge <- function(grad, tol, fscale, f){
-  con <- tol * (abs(f) + fscale)
+judge <- function(func,grad, step, tol, fscale){
+  
+  con <- tol * (abs(func(step)) + fscale)
   
   #get gradient
-  abs_value <- abs(grad)
+  abs_value <- abs(grad(step))
   
   #get judge value, if it is 0, then condition satisfied
   result <- sum(abs_value >= con)
