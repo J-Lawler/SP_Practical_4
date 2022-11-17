@@ -6,9 +6,12 @@ test_grad <- function(th,k=2){
 if hess=NULL {
   
   # test parameter values
-  th0 <- c(2, 2) 
+  init_param <- c(2, 2)
+  th0 <- init_param
+  
   #remove
   eps <- 1e-6
+  
   # gradient values at theta0
   grad0 <- test_grad(th=th0, 2) 
   
