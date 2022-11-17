@@ -69,9 +69,8 @@ newt <- function(theta,func,grad,hess=NULL,...,tol=1e-8,fscale=1,maxit=100,max.h
     
     for(j in 1:max.half+1){
       
-      # is this for error 3
       # if we half the delta too many times
-      if(j == max.half+1){stop("Oops")}
+      if(j == max.half+1){warning("Fails to reduce by harlfing")}
       
       # Check function has decreased
       if(func(step_prev)-func(step)>0){
@@ -83,7 +82,7 @@ newt <- function(theta,func,grad,hess=NULL,...,tol=1e-8,fscale=1,maxit=100,max.h
       }
       
     # stop if maxit is reached without convergence, adding try code here since 
-    #inside while loop means not convergence
+    # inside while loop means not convergence
     if(iter == maxit){
       warning("reached maxit without convergence")
     }
