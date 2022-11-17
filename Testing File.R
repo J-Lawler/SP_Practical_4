@@ -1,6 +1,6 @@
 
 
-source("Initial Workings.R")
+source("proj4.R")
 
 
 ###############################################################################
@@ -53,9 +53,15 @@ estimate_nlm <- nlm(f= test_inputs$rb, p = init_param)$estimate
 estimate_newt <- newt(theta = init_param,func = test_inputs$rb,
                       grad = test_inputs$gb,hess = test_inputs$hb)
 
+# Estimate when Hessian is not supplied
+
+estimate_newt <- newt(theta = init_param,func = test_inputs$rb,
+                      grad = test_inputs$gb)
+
 
 ####################
 
+# Compare Estimates
 
 print("Estimate from in-built R function:")
 
@@ -71,7 +77,14 @@ estimate_newt
 
 ################################################################################
 
+# testing the approximate_hess function
 
+testing_parameters <- c(4,2)
 
+hess_approx <- approximate_hess(test_grad(testing_parameters), testing_parameters, test_grad,1e-6)
 
+hess_true <- test_hess(testing_parameters)
 
+print(hess_approx)
+
+print(hess_true)
