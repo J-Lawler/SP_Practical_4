@@ -11,21 +11,25 @@ source("proj4.R")
 # Test Functions from Task Sheet
 
 # Function to minimise
-test_func <- function(th,k=2){ 
-  k*(th[2]-th[1]^2)^2 + (1-th[1])^2
+test_func <- function(param,j){ 
+  j*(param[2]-param[1]^2)^2 + (1-param[1])^2
 }
 
 # Gradient
-test_grad <- function(th,k=2){ 
-  c(-2*(1-th[1])-k*4*th[1]*(th[2]-th[1]^2),k*2*(th[2]-th[1]^2))
+test_grad <- function(param,j){ 
+  c(-2*(1-param[1])-j*4*param[1]*(param[2]-param[1]^2),j*2*(param[2]-param[1]^2))
 }
 
+# test_hess<- function(theta, j){
+#   Inf
+# }
+
 # Hessian
-test_hess <- function(th,k=2){ 
+test_hess <- function(param,j){ 
   h <- matrix(0,2,2) 
-  h[1,1] <- 2-k*2*(2*(th[2]-th[1]^2) - 4*th[1]^2) 
-  h[2,2] <- 2*k 
-  h[1,2] <- h[2,1] <- -4*k*th[1] 
+  h[1,1] <- 2-j*2*(2*(param[2]-param[1]^2) - 4*param[1]^2) 
+  h[2,2] <- 2*j 
+  h[1,2] <- h[2,1] <- -4*j*param[1] 
   h
 }
 
@@ -42,7 +46,7 @@ init_param <- c(2,2)
 ########## Use In-built Function ##########
 
 
-estimate_nlm <- nlm(f= test_inputs$rb, p = init_param)$estimate
+estimate_nlm <- nlm(f= test_inputs$rb, p = init_param,j=2)$estimate
 
 
 ########## Use Hand-built Function ##########
@@ -51,12 +55,12 @@ estimate_nlm <- nlm(f= test_inputs$rb, p = init_param)$estimate
 # Estimate
 
 estimate_newt <- newt(theta = init_param,func = test_inputs$rb,
-                      grad = test_inputs$gb,hess = test_inputs$hb)
+                      grad = test_inputs$gb,hess = test_inputs$hb, j = 2)
 
 # Estimate when Hessian is not supplied
 
 estimate_newt <- newt(theta = init_param,func = test_inputs$rb,
-                      grad = test_inputs$gb)
+                      grad = test_inputs$gb, j = 40, max.half = 10)
 
 
 ####################
@@ -70,7 +74,7 @@ estimate_nlm
 
 print("Estimate from newt function:")
 
-estimate_newt
+estimate_newt$theta
 
 
 
